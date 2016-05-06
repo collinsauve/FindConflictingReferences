@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace FindConflictingReferences
 {
     // Based on https://gist.github.com/brianlow/1553265 and https://gist.github.com/WaffleSouffle/bcc3eaebaa7a7cadcab6
     public class Program
     {
-        private static void FindConflicts(TextWriter output, string path)
+        private static void OutputConflicts(TextWriter output, IEnumerable<IGrouping<string, Reference>> references)
         {
-            var references = AssemblyReference.GetReferencedAssembliesWithMultipleVersions(path);
-
             foreach (var group in references)
             {
                 output.WriteLine("Possible conflicts for {0}:", group.Key);
@@ -28,7 +27,8 @@ namespace FindConflictingReferences
         {
             foreach (var path in GetPathsFromArgs(args))
             {
-                FindConflicts(Console.Out, path);
+                var references = AssemblyReference.GetReferencedAssembliesWithMultipleVersions(path);
+                OutputConflicts(Console.Out, references);
             }
         }
 
