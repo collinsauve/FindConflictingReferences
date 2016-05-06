@@ -31,12 +31,12 @@ namespace FindConflictingReferences
 
         public static IEnumerable<Assembly> GetAllAssemblies(string path)
         {
-            return GetFiles(path, "*.dll", "*.exe")
+            return GetFileNames(path, "*.dll", "*.exe")
                 .Select(TryLoadAssembly)
                 .Where(asm => asm != null);
         }
 
-        private static IEnumerable<string> GetFiles(string path, params string[] extensions)
+        private static IEnumerable<string> GetFileNames(string path, params string[] extensions)
         {
             return extensions.SelectMany(ext => Directory.GetFiles(path, ext, SearchOption.AllDirectories));
         }
