@@ -10,11 +10,9 @@ namespace FindConflictingReferences
     {
         public static IEnumerable<IGrouping<string, Reference>> FindReferencesWithTheSameShortNameButDiffererntFullNames(IEnumerable<Reference> references)
         {
-            return from reference in references
-                group reference by reference.ReferencedAssembly.Name
-                into referenceGroup
-                where referenceGroup.ToList().Select(reference => reference.ReferencedAssembly.FullName).Distinct().Count() > 1
-                select referenceGroup;
+            return references
+                .GroupBy(r => r.ReferencedAssembly.Name)
+                .Where(r => r.Select(t => t.ReferencedAssembly.FullName).Distinct().Count() > 1);
         }
 
         public static IEnumerable<Reference> GetReferencesFromAllAssemblies(IEnumerable<Assembly> assemblies)
