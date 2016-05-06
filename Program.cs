@@ -1,25 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace FindConflictingReferences
 {
     // Based on https://gist.github.com/brianlow/1553265 and https://gist.github.com/WaffleSouffle/bcc3eaebaa7a7cadcab6
     public class Program
     {
-        private static void FindConflicts(System.IO.TextWriter output, string path)
+        private static void OutputConflicts(TextWriter output, IEnumerable<IGrouping<string, Reference>> references)
         {
-            var assemblies = FindConflictingReferenceFunctions.GetAllAssemblies(path);
+            if (!references.Any())
+                return;
 
-            var references = FindConflictingReferenceFunctions.GetReferencesFromAllAssemblies(assemblies);
+            var maxNameLength = references.SelectMany(t => t).Max(t => t.Assembly.Name.Length);
 
-            var groupsOfConflicts = FindConflictingReferenceFunctions.FindReferencesWithTheSameShortNameButDiffererntFullNames(references);
-
-            foreach (var group in groupsOfConflicts)
+            foreach (var group in references)
             {
                 output.WriteLine("Possible conflicts for {0}:", group.Key);
                 foreach (var reference in group)
                 {
-                    output.WriteLine("{0} references {1}",
-                        reference.Assembly.Name.PadRight(25),
+                    output.WriteLine("    {0} references {1}",
+                        reference.Assembly.Name.PadRight(maxNameLength),
                         reference.ReferencedAssembly.FullName);
                 }
                 output.WriteLine();
@@ -28,10 +30,19 @@ namespace FindConflictingReferences
 
         public static void Main(string[] args)
         {
-            var paths = new List<string>();
-            for (var argIter = 0; argIter < args.Length; ++argIter)
+            foreach (var path in GetPathsFromArgs(args))
             {
-                var arg = args[argIter];
+                var references = AssemblyReference.GetReferencedAssembliesWithMultipleVersions(path);
+                OutputConflicts(Console.Out, references);
+            }
+        }
+
+        private static List<string> GetPathsFromArgs(string[] args)
+        {
+            var paths = new List<string>();
+
+            foreach (var arg in args)
+            {
                 if (arg.StartsWith("-"))
                 {
                     if (arg.StartsWith("--"))
@@ -55,13 +66,10 @@ namespace FindConflictingReferences
 
             if (paths.Count == 0)
             {
-                paths.Add(System.IO.Directory.GetCurrentDirectory());
+                paths.Add(Directory.GetCurrentDirectory());
             }
 
-            foreach (var path in paths)
-            {
-                FindConflicts(System.Console.Out, path);
-            }
+            return paths;
         }
     }
 }
