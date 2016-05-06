@@ -8,7 +8,7 @@ namespace FindConflictingReferences
 {
     public class FindConflictingReferenceFunctions
     {
-        public static IEnumerable<IGrouping<string, Reference>> FindReferencesWithTheSameShortNameButDiffererntFullNames(IEnumerable<Reference> references)
+        public static IEnumerable<IGrouping<string, Reference>> GetReferencedAssembliesWithMultipleVersions(IEnumerable<Reference> references)
         {
             return references
                 .GroupBy(r => r.ReferencedAssembly.Name)
