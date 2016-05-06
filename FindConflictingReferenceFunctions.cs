@@ -38,11 +38,14 @@ namespace FindConflictingReferences
 
         public static List<Assembly> GetAllAssemblies(string path)
         {
-            var files = new List<FileInfo>();
-            var directoryToSearch = new DirectoryInfo(path);
-            files.AddRange(directoryToSearch.GetFiles("*.dll", SearchOption.AllDirectories));
-            files.AddRange(directoryToSearch.GetFiles("*.exe", SearchOption.AllDirectories));
-            return files.ConvertAll(TryLoadAssembly);
+            return GetFiles(path, "*.dll", "*.exe")
+                .Select(TryLoadAssembly)
+                .ToList();
+        }
+
+        private static IEnumerable<FileInfo> GetFiles(string path, params string[] extensions)
+        {
+            return extensions.SelectMany(ext => new DirectoryInfo(path).GetFiles(ext, SearchOption.AllDirectories));
         }
 
         private static Assembly TryLoadAssembly(FileInfo file)
