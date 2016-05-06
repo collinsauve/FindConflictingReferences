@@ -22,8 +22,6 @@ namespace FindConflictingReferences
             var references = new List<Reference>();
             foreach (var assembly in assemblies)
             {
-                if (assembly == null)
-                    continue;
                 foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
                 {
                     references.Add(new Reference
@@ -40,6 +38,7 @@ namespace FindConflictingReferences
         {
             return GetFiles(path, "*.dll", "*.exe")
                 .Select(TryLoadAssembly)
+                .Where(asm => asm != null)
                 .ToList();
         }
 
