@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -48,7 +49,7 @@ namespace FindConflictingReferences
                     Assembly asm = Assembly.LoadFile(file.FullName);
                     return asm;
                 }
-                catch (System.BadImageFormatException)
+                catch (BadImageFormatException)
                 {
                     return null;
                 }
