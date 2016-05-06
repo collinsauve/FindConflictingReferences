@@ -8,14 +8,17 @@ namespace FindConflictingReferences
 {
     public class FindConflictingReferenceFunctions
     {
-        public static IEnumerable<IGrouping<string, Reference>> GetReferencedAssembliesWithMultipleVersions(IEnumerable<Reference> references)
+        public static IEnumerable<IGrouping<string, Reference>> GetReferencedAssembliesWithMultipleVersions(string path)
         {
+            var assemblies = GetAllAssemblies(path);
+            var references = GetReferencesFromAllAssemblies(assemblies);
+
             return references
                 .GroupBy(r => r.ReferencedAssembly.Name)
                 .Where(r => r.Select(t => t.ReferencedAssembly.FullName).Distinct().Count() > 1);
         }
 
-        public static IEnumerable<Reference> GetReferencesFromAllAssemblies(IEnumerable<Assembly> assemblies)
+        private static IEnumerable<Reference> GetReferencesFromAllAssemblies(IEnumerable<Assembly> assemblies)
         {
             return assemblies.SelectMany(GetReferencedAssemblies);
         }
@@ -29,7 +32,7 @@ namespace FindConflictingReferences
             });
         }
 
-        public static IEnumerable<Assembly> GetAllAssemblies(string path)
+        private static IEnumerable<Assembly> GetAllAssemblies(string path)
         {
             return GetFileNames(path, "*.dll", "*.exe")
                 .Select(TryLoadAssembly)
