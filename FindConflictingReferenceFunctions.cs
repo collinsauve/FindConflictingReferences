@@ -42,19 +42,19 @@ namespace FindConflictingReferences
             var directoryToSearch = new DirectoryInfo(path);
             files.AddRange(directoryToSearch.GetFiles("*.dll", SearchOption.AllDirectories));
             files.AddRange(directoryToSearch.GetFiles("*.exe", SearchOption.AllDirectories));
-            return files.ConvertAll(file =>
-            {
-                try
-                {
-                    Assembly asm = Assembly.LoadFile(file.FullName);
-                    return asm;
-                }
-                catch (BadImageFormatException)
-                {
-                    return null;
-                }
+            return files.ConvertAll(TryLoadAssembly);
+        }
 
-            });
+        private static Assembly TryLoadAssembly(FileInfo file)
+        {
+            try
+            {
+                return Assembly.LoadFile(file.FullName);
+            }
+            catch (BadImageFormatException)
+            {
+                return null;
+            }
         }
     }
 }
