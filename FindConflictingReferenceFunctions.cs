@@ -8,7 +8,7 @@ namespace FindConflictingReferences
 {
     public class FindConflictingReferenceFunctions
     {
-        public static IEnumerable<IGrouping<string, Reference>> FindReferencesWithTheSameShortNameButDiffererntFullNames(List<Reference> references)
+        public static IEnumerable<IGrouping<string, Reference>> FindReferencesWithTheSameShortNameButDiffererntFullNames(IEnumerable<Reference> references)
         {
             return from reference in references
                 group reference by reference.ReferencedAssembly.Name
@@ -17,7 +17,7 @@ namespace FindConflictingReferences
                 select referenceGroup;
         }
 
-        public static List<Reference> GetReferencesFromAllAssemblies(List<Assembly> assemblies)
+        public static IEnumerable<Reference> GetReferencesFromAllAssemblies(IEnumerable<Assembly> assemblies)
         {
             var references = new List<Reference>();
             foreach (var assembly in assemblies)
@@ -34,12 +34,11 @@ namespace FindConflictingReferences
             return references;
         }
 
-        public static List<Assembly> GetAllAssemblies(string path)
+        public static IEnumerable<Assembly> GetAllAssemblies(string path)
         {
             return GetFiles(path, "*.dll", "*.exe")
                 .Select(TryLoadAssembly)
-                .Where(asm => asm != null)
-                .ToList();
+                .Where(asm => asm != null);
         }
 
         private static IEnumerable<string> GetFiles(string path, params string[] extensions)
