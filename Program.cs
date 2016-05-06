@@ -24,10 +24,18 @@ namespace FindConflictingReferences
 
         public static void Main(string[] args)
         {
-            var paths = new List<string>();
-            for (var argIter = 0; argIter < args.Length; ++argIter)
+            foreach (var path in GetPathsFromArgs(args))
             {
-                var arg = args[argIter];
+                FindConflicts(System.Console.Out, path);
+            }
+        }
+
+        private static List<string> GetPathsFromArgs(string[] args)
+        {
+            var paths = new List<string>();
+
+            foreach (var arg in args)
+            {
                 if (arg.StartsWith("-"))
                 {
                     if (arg.StartsWith("--"))
@@ -54,10 +62,7 @@ namespace FindConflictingReferences
                 paths.Add(System.IO.Directory.GetCurrentDirectory());
             }
 
-            foreach (var path in paths)
-            {
-                FindConflicts(System.Console.Out, path);
-            }
+            return paths;
         }
     }
 }
