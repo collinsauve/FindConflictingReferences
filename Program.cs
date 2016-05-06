@@ -7,9 +7,9 @@ namespace FindConflictingReferences
     {
         private static void FindConflicts(System.IO.TextWriter output, string path)
         {
-            var groupsOfConflicts = FindConflictingReferenceFunctions.GetReferencedAssembliesWithMultipleVersions(path);
+            var references = AssemblyReference.GetReferencedAssembliesWithMultipleVersions(path);
 
-            foreach (var group in groupsOfConflicts)
+            foreach (var group in references)
             {
                 output.WriteLine("Possible conflicts for {0}:", group.Key);
                 foreach (var reference in group)
