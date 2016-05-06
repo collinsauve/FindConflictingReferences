@@ -19,19 +19,16 @@ namespace FindConflictingReferences
 
         public static IEnumerable<Reference> GetReferencesFromAllAssemblies(IEnumerable<Assembly> assemblies)
         {
-            var references = new List<Reference>();
-            foreach (var assembly in assemblies)
+            return assemblies.SelectMany(GetReferencedAssemblies);
+        }
+
+        private static IEnumerable<Reference> GetReferencedAssemblies(Assembly asm)
+        {
+            return asm.GetReferencedAssemblies().Select(refAsm => new Reference
             {
-                foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
-                {
-                    references.Add(new Reference
-                    {
-                        Assembly = assembly.GetName(),
-                        ReferencedAssembly = referencedAssembly
-                    });
-                }
-            }
-            return references;
+                Assembly = asm.GetName(),
+                ReferencedAssembly = refAsm
+            });
         }
 
         public static IEnumerable<Assembly> GetAllAssemblies(string path)
