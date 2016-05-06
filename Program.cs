@@ -10,13 +10,18 @@ namespace FindConflictingReferences
     {
         private static void OutputConflicts(TextWriter output, IEnumerable<IGrouping<string, Reference>> references)
         {
+            if (!references.Any())
+                return;
+
+            var maxNameLength = references.SelectMany(t => t).Max(t => t.Assembly.Name.Length);
+
             foreach (var group in references)
             {
                 output.WriteLine("Possible conflicts for {0}:", group.Key);
                 foreach (var reference in group)
                 {
-                    output.WriteLine("{0} references {1}",
-                        reference.Assembly.Name.PadRight(25),
+                    output.WriteLine("    {0} references {1}",
+                        reference.Assembly.Name.PadRight(maxNameLength),
                         reference.ReferencedAssembly.FullName);
                 }
                 output.WriteLine();
