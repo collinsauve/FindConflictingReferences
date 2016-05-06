@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace FindConflictingReferences
 {
     // Based on https://gist.github.com/brianlow/1553265 and https://gist.github.com/WaffleSouffle/bcc3eaebaa7a7cadcab6
     public class Program
     {
-        private static void FindConflicts(System.IO.TextWriter output, string path)
+        private static void FindConflicts(TextWriter output, string path)
         {
             var references = AssemblyReference.GetReferencedAssembliesWithMultipleVersions(path);
 
@@ -26,7 +28,7 @@ namespace FindConflictingReferences
         {
             foreach (var path in GetPathsFromArgs(args))
             {
-                FindConflicts(System.Console.Out, path);
+                FindConflicts(Console.Out, path);
             }
         }
 
@@ -59,7 +61,7 @@ namespace FindConflictingReferences
 
             if (paths.Count == 0)
             {
-                paths.Add(System.IO.Directory.GetCurrentDirectory());
+                paths.Add(Directory.GetCurrentDirectory());
             }
 
             return paths;
