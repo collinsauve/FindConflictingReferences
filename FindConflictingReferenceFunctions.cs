@@ -43,16 +43,16 @@ namespace FindConflictingReferences
                 .ToList();
         }
 
-        private static IEnumerable<FileInfo> GetFiles(string path, params string[] extensions)
+        private static IEnumerable<string> GetFiles(string path, params string[] extensions)
         {
-            return extensions.SelectMany(ext => new DirectoryInfo(path).GetFiles(ext, SearchOption.AllDirectories));
+            return extensions.SelectMany(ext => Directory.GetFiles(path, ext, SearchOption.AllDirectories));
         }
 
-        private static Assembly TryLoadAssembly(FileInfo file)
+        private static Assembly TryLoadAssembly(string filename)
         {
             try
             {
-                return Assembly.LoadFile(file.FullName);
+                return Assembly.LoadFile(filename);
             }
             catch (BadImageFormatException)
             {
